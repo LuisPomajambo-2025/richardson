@@ -5,11 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LogError {
-    private LocalDate fech;
-    private String detalle;
+    private LocalDateTime fecha;
+    private String mensaje;
+    private String detalles;
 }

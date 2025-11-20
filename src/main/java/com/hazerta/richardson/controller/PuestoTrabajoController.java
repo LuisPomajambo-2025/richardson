@@ -10,6 +10,7 @@ import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
@@ -78,5 +79,22 @@ public class PuestoTrabajoController {
         WebMvcLinkBuilder link1 = linkTo(methodOn(this.getClass()).obtenerUnpuestoTrabajo(id));
         return EntityModel.of(modelMapper.map(puestoTrabajo,PuestoTrabajoDTO.class)).add(link1.withRel("puestos_trabajo-link"));
     }
+    @GetMapping("/hateos")
+    public CollectionModel<EntityModel<PuestoTrabajoDTO>> listarTodosH() {
 
-}
+        List<EntityModel<PuestoTrabajoDTO>> puestosHateo = puestoTrabajoService.obtenerTodosLosPuestosTrabajo()
+                .stream()
+                .map(p -> EntityModel.of(
+                        modelMapper.map(p, PuestoTrabajoDTO.class),
+                        linkTo(methodOn(this.getClass()).consultarUnoH(p.getId())).withSelfRel()
+                ))
+                .toList();
+
+        if (puestosHateo.isEmpty()) {
+            throw new NoEncontradoException();
+        }
+
+        return CollectionModel.of(puestosHateo, linkTo(methodOn(this.getClass()).listarTodosH()).withSelfRel());
+        }
+    }
+
